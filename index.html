@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>موفقیت در کنار تلاش</title>
+    <meta name="theme-color" content="#b8860b">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="تلاش">
+    <link id="manifestLink" rel="manifest">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif}
+        body{background:#0a0a0a;color:#eee;padding:16px 12px 80px;min-height:100vh;display:flex;flex-direction:column;align-items:center}
+        .container{width:100%;max-width:500px}
+        header{text-align:center;border-bottom:2px solid #b8860b;padding-bottom:14px;margin-bottom:20px}
+        header h1{font-size:2rem;color:#ffd700;text-shadow:0 0 30px rgba(255,215,0,0.15);letter-spacing:2px}
+        .date-row{display:flex;justify-content:center;gap:10px;font-size:1rem;color:#c0c0c0;margin-top:8px;flex-wrap:wrap}
+        .date-row span{background:#1a1a1a;padding:6px 16px;border-radius:30px;border:1px solid #333;font-weight:500}
+        .day-badge{color:#ffd700!important;border-color:#b8860b!important}
+        .status-card{background:linear-gradient(145deg,#1a1a1a,#0d0d0d);border-radius:20px;padding:20px 18px;margin-bottom:18px;border-right:6px solid #b8860b;box-shadow:0 8px 24px rgba(184,134,11,0.08);display:flex;justify-content:space-between;align-items:center}
+        .status-left{display:flex;align-items:center;gap:14px}
+        .status-icon{font-size:2.4rem}
+        .status-text{font-size:1.2rem;font-weight:bold;color:#ffd700}
+        .lesson-topic{font-size:0.95rem;color:#aaa;margin-top:2px}
+        .mini-calendar{background:#111;border-radius:24px;padding:20px 16px;margin-bottom:20px;border:1px solid #2a2a2a;box-shadow:0 8px 32px rgba(0,0,0,0.6)}
+        .mini-calendar .month-year{text-align:center;font-size:1.3rem;color:#ffd700;margin-bottom:12px;font-weight:bold}
+        .mini-calendar .weekdays{display:grid;grid-template-columns:repeat(7,1fr);text-align:center;color:#888;font-size:0.8rem;margin-bottom:8px}
+        .mini-calendar .days-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}
+        .mini-calendar .day-cell{text-align:center;padding:8px 0;border-radius:30px;font-size:0.9rem;background:#1a1a1a;color:#ccc;transition:0.2s;font-weight:500}
+        .mini-calendar .day-cell.today{background:#b8860b;color:#000;font-weight:bold;box-shadow:0 0 30px rgba(184,134,11,0.3)}
+        .mini-calendar .day-cell.holiday{color:#ff5555}
+        .mini-calendar .day-cell.inactive{color:#444;background:#0a0a0a}
+        .mini-calendar .day-cell.start{background:#b8860b;color:#000;font-weight:bold;box-shadow:0 0 20px rgba(184,134,11,0.2)}
+        .month-nav{display:flex;justify-content:center;gap:10px;margin-bottom:16px}
+        .month-nav button{background:#1a1a1a;border:1px solid #b8860b;color:#ffd700;padding:6px 16px;border-radius:30px;cursor:pointer;font-weight:bold;transition:0.2s}
+        .month-nav button:hover{background:#b8860b;color:#000}
+        .month-nav button.active{background:#b8860b;color:#000}
+        .alert-card{background:linear-gradient(135deg,#1f1a0a,#2a1f0a);border:1px solid #b8860b;border-radius:18px;padding:16px 18px;margin-bottom:18px;display:flex;align-items:center;gap:14px;box-shadow:0 0 40px rgba(184,134,11,0.04);animation:pulse-glow 2.5s infinite alternate}
+        @keyframes pulse-glow{0%{box-shadow:0 0 10px rgba(184,134,11,0.08)}100%{box-shadow:0 0 30px rgba(184,134,11,0.15)}}
+        .alert-card .icon{font-size:2.2rem}
+        .alert-card .content{flex:1}
+        .alert-card .title{font-weight:bold;color:#ffd700;font-size:1rem}
+        .alert-card .desc{font-size:0.9rem;color:#bbb}
+        .alert-card .btn-small{background:#b8860b;border:none;padding:8px 18px;border-radius:30px;color:#000;font-weight:bold;cursor:pointer;transition:0.2s}
+        .alert-card .btn-small:hover{background:#d4a017;transform:scale(1.03)}
+        .next-class{background:#111;border-radius:24px;padding:20px 18px;margin-bottom:22px;border:1px solid #2a2a2a;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
+        .next-class .header{display:flex;justify-content:space-between;color:#aaa;font-size:0.95rem}
+        .next-class .class-name{color:#ffd700;font-weight:bold}
+        .next-class .countdown{font-size:3.2rem;text-align:center;color:#ffd700;padding:10px 0;letter-spacing:6px;text-shadow:0 0 40px rgba(255,215,0,0.08);font-weight:bold}
+        .next-class .detail{text-align:center;color:#888;font-size:0.9rem}
+        .menu-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:10px 0 20px}
+        .menu-btn{background:#1a1a1a;border:1px solid #2a2a2a;border-radius:18px;padding:16px 6px;color:#eee;font-size:0.9rem;cursor:pointer;transition:0.25s;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;font-weight:500;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+        .menu-btn:hover{background:#2a2a2a;border-color:#b8860b;transform:translateY(-3px);box-shadow:0 6px 16px rgba(184,134,11,0.1)}
+        .menu-btn:active{transform:scale(0.96)}
+        .sys-msg{background:#1a1a1a;border-right:6px solid #b8860b;padding:14px 18px;border-radius:14px;color:#ffd700;font-size:1rem;display:none;margin-top:8px;box-shadow:0 2px 12px rgba(0,0,0,0.3)}
+        .sys-msg.show{display:block}
+        .chart-box{background:#111;border-radius:24px;padding:20px 16px;margin:16px 0 20px;border:1px solid #2a2a2a;box-shadow:0 4px 20px rgba(0,0,0,0.4)}
+        .chart-box .chart-title{text-align:center;color:#ffd700;font-weight:bold;font-size:1.1rem;margin-bottom:14px}
+        .chart-bars{display:flex;align-items:flex-end;justify-content:space-around;height:150px;gap:2px}
+        .bar-item{display:flex;flex-direction:column;align-items:center;flex:1;min-width:0}
+        .bar{width:100%;max-width:28px;min-width:10px;background:linear-gradient(180deg,#b8860b,#ffd700);border-radius:6px 6px 0 0;min-height:4px;transition:height 0.8s ease;box-shadow:0 0 20px rgba(184,134,11,0.15)}
+        .bar-label{font-size:0.55rem;color:#aaa;margin-top:5px;white-space:nowrap}
+        .bar-value{font-size:0.6rem;color:#ffd700;margin-top:1px;font-weight:bold}
+        .no-data{text-align:center;color:#666;padding:20px 0;font-size:0.95rem}
+        .page{display:none}
+        .page.active{display:block}
+        .chat-box{background:#1a1a1a;border-radius:16px;padding:16px;margin-bottom:16px;max-height:300px;overflow-y:auto}
+        .chat-msg{background:#111;padding:10px 14px;border-radius:12px;margin-bottom:8px;border-right:3px solid #b8860b}
+        .chat-msg.user{border-right-color:#ffd700}
+        .chat-msg.bot{border-right-color:#888}
+        .chat-input{display:flex;gap:10px;margin-top:12px}
+        .chat-input input{flex:1;padding:10px 14px;border-radius:30px;border:1px solid #333;background:#111;color:#eee;font-size:0.95rem}
+        .chat-input button{padding:10px 20px;border-radius:30px;border:none;background:#b8860b;color:#000;font-weight:bold;cursor:pointer}
+        .form-group{margin-bottom:14px}
+        .form-group label{display:block;color:#aaa;font-size:0.9rem;margin-bottom:4px}
+        .form-group select,.form-group input,.form-group textarea{width:100%;padding:10px 14px;border-radius:12px;border:1px solid #333;background:#1a1a1a;color:#eee;font-size:1rem}
+        .form-group select option{background:#1a1a1a}
+        .form-group textarea{resize:vertical;min-height:60px}
+        .btn-primary{background:#b8860b;border:none;padding:12px 24px;border-radius:30px;color:#000;font-weight:bold;cursor:pointer;width:100%;font-size:1rem;transition:0.2s}
+        .btn-primary:hover{background:#d4a017;transform:scale(1.02)}
+        .item-card{background:#1a1a1a;border-radius:16px;padding:14px 16px;margin-bottom:10px;border-right:4px solid #b8860b;display:flex;justify-content:space-between;align-items:center}
+        .item-card .info{flex:1}
+        .item-card .title{color:#fff;font-weight:bold}
+        .item-card .desc{color:#aaa;font-size:0.85rem;margin-top:2px}
+        .item-card .date{color:#888;font-size:0.8rem;margin-top:2px}
+        .item-card .delete-btn{background:transparent;border:none;color:#ff5555;font-size:1.2rem;cursor:pointer;padding:0 8px}
+        .empty-state{color:#666;padding:20px 0;text-align:center}
+        .install-banner{background:linear-gradient(135deg,#1f1a0a,#2a1f0a);border:1px solid #b8860b;border-radius:18px;padding:14px 18px;margin-bottom:18px;display:none;align-items:center;gap:14px}
+        .install-banner.show{display:flex}
+        .install-banner .btn-install{background:#b8860b;border:none;padding:10px 20px;border-radius:30px;color:#000;font-weight:bold;cursor:pointer;white-space:nowrap}
+        @media(max-width:420px){header h1{font-size:1.6rem}.next-class .countdown{font-size:2.6rem}.menu-btn{font-size:0.75rem;padding:12px 4px}}
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <header>
+        <h1>✨ موفقیت در کنار تلاش</h1>
+        <div class="date-row">
+            <span id="shamsiDate">۱۴۰۵/۰۳/۲۷</span>
+            <span class="day-badge" id="dayStatus">چهارشنبه</span>
+            <span id="dayNumber">شروع در ۵ روز</span>
+        </div>
+    </header>
+
+    <!-- بنر نصب PWA -->
+    <div class="install-banner" id="installBanner">
+        <span style="font-size:2rem;">📲</span>
+        <div style="flex:1">
+            <div style="color:#ffd700;font-weight:bold;font-size:1rem;">نصب اپلیکیشن</div>
+            <div style="color:#bbb;font-size:0.85rem;">برای استفاده آنلاین و آفلاین نصب کنید</div>
+        </div>
+        <button class="btn-install" id="installBtn">نصب</button>
+    </div>
+
+    <!-- ===== HOME ===== -->
+    <div id="page-home" class="page active">
+        <div class="mini-calendar" id="miniCalendar">
+            <div class="month-year" id="calendarHeader">تیر ۱۴۰۵</div>
+            <div class="weekdays"><span>ش</span><span>ی</span><span>د</span><span>س</span><span>چ</span><span>پ</span><span>ج</span></div>
+            <div class="days-grid" id="daysGrid"></div>
+        </div>
+        <div class="month-nav">
+            <button class="month-btn active" data-month="4">تیر</button>
+            <button class="month-btn" data-month="5">مرداد</button>
+            <button class="month-btn" data-month="6">شهریور</button>
+        </div>
+
+        <div class="status-card">
+            <div class="status-left">
+                <span class="status-icon" id="statusIcon">⏳</span>
+                <div>
+                    <div class="status-text" id="statusText">در انتظار شروع دوره</div>
+                    <div class="lesson-topic" id="lessonTopic">دوره از ۱ تیر آغاز می‌شود (۵ روز مانده)</div>
+                </div>
+            </div>
+            <div style="font-size:1.6rem;">📌</div>
+        </div>
+
+        <div class="alert-card" id="alertCard" style="display:none;">
+            <span class="icon">📢</span>
+            <div class="content">
+                <div class="title">نزدیک‌ترین کلاس</div>
+                <div class="desc" id="alertDesc">---</div>
+            </div>
+            <button class="btn-small" onclick="document.querySelector('[data-page=schedule]').click()">مدیریت</button>
+        </div>
+
+        <div class="next-class">
+            <div class="header"><span>⏰ کلاس بعدی</span><span class="class-name" id="nextClassName">---</span></div>
+            <div class="countdown" id="countdownTimer">--:--:--</div>
+            <div class="detail" id="classDetail">هنوز کلاسی ثبت نشده است</div>
+        </div>
+
+        <div class="chart-box">
+            <div class="chart-title">📈 نمودار رشد کلی (همه مباحث)</div>
+            <div id="chartContainer"><div class="no-data">⏳ هنوز داده‌ای برای نمایش وجود ندارد.</div></div>
+        </div>
+    </div>
+
+    <!-- ===== SCHEDULE ===== -->
+    <div id="page-schedule" class="page">
+        <h2 style="color:#ffd700;margin-bottom:16px;">📅 کلاس‌ها</h2>
+        <div style="background:#1a1a1a;border-radius:16px;padding:16px;margin-bottom:16px;">
+            <h3 style="color:#ffd700;font-size:1rem;margin-bottom:12px;">ثبت کلاس جدید</h3>
+            <div class="form-group">
+                <label>روز هفته</label>
+                <select id="classDay">
+                    <option value="0">شنبه</option>
+                    <option value="1">یکشنبه</option>
+                    <option value="2">دوشنبه</option>
+                    <option value="3">سه‌شنبه</option>
+                    <option value="4" selected>چهارشنبه</option>
+                    <option value="5">پنج‌شنبه</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>عنوان کلاس</label>
+                <input type="text" id="classTitle" placeholder="مثال: JavaScript">
+            </div>
+            <div class="form-group">
+                <label>ساعت شروع</label>
+                <input type="time" id="classStart" value="10:00">
+            </div>
+            <div class="form-group">
+                <label>ساعت پایان</label>
+                <input type="time" id="classEnd" value="12:00">
+            </div>
+            <button class="btn-primary" id="addClassBtn">➕ ثبت کلاس</button>
+        </div>
+        <div id="classListContainer">
+            <p style="color:#aaa;margin-bottom:10px;">کلاس‌های ثبت شده:</p>
+            <div id="classList"></div>
+        </div>
+    </div>
+
+    <!-- ===== WORKS ===== -->
+    <div id="page-works" class="page">
+        <h2 style="color:#ffd700;margin-bottom:16px;">📁 آثار من</h2>
+        <div style="background:#1a1a1a;border-radius:16px;padding:16px;margin-bottom:16px;">
+            <h3 style="color:#ffd700;font-size:1rem;margin-bottom:12px;">ثبت اثر جدید</h3>
+            <div class="form-group">
+                <label>عنوان اثر</label>
+                <input type="text" id="workTitle" placeholder="مثال: سایت فروشگاهی">
+            </div>
+            <div class="form-group">
+                <label>توضیحات</label>
+                <textarea id="workDesc" placeholder="توضیح مختصر درباره اثر"></textarea>
+            </div>
+            <div class="form-group">
+                <label>لینک (اختیاری)</label>
+                <input type="url" id="workLink" placeholder="https://...">
+            </div>
+            <button class="btn-primary" id="addWorkBtn">➕ ثبت اثر</button>
+        </div>
+        <div id="workListContainer">
+            <p style="color:#aaa;margin-bottom:10px;">آثار ثبت شده:</p>
+            <div id="workList"></div>
+        </div>
+    </div>
+
+    <!-- ===== OTHER PAGES ===== -->
+    <div id="page-learn" class="page"><h2 style="color:#ffd700;margin-bottom:16px;">📖 آموزش</h2><div style="background:#1a1a1a;border-radius:16px;padding:16px;"><p style="color:#aaa;">مباحث روزانه بر اساس برنامه ۷۵ روزه</p><ul style="color:#ccc;margin-top:12px;list-style:none;"><li style="padding:6px 0;border-bottom:1px solid #222;">⏳ هنوز آموزشی شروع نشده است</li></ul></div></div>
+    <div id="page-quiz" class="page"><h2 style="color:#ffd700;margin-bottom:16px;">📝 آزمون</h2><div style="background:#1a1a1a;border-radius:16px;padding:16px;"><p style="color:#aaa;">آزمون‌های هفتگی و جامع</p><div style="margin-top:12px;color:#ccc;"><div style="padding:6px 0;border-bottom:1px solid #222;">⏳ هنوز آزمونی برگزار نشده است</div></div></div></div>
+    <div id="page-progress" class="page"><h2 style="color:#ffd700;margin-bottom:16px;">📊 پیشرفت</h2><div style="background:#1a1a1a;border-radius:16px;padding:16px;"><p style="color:#aaa;">وضعیت کلی دوره</p><div style="margin-top:12px;color:#ccc;"><div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222;"><span>درصد پیشرفت</span><span style="color:#ffd700;">۰٪</span></div><div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid #222;"><span>میانگین نمرات</span><span style="color:#ffd700;">--</span></div></div></div></div>
+
+    <div id="page-chat" class="page">
+        <h2 style="color:#ffd700;margin-bottom:16px;">💬 چت‌بات</h2>
+        <div class="chat-box" id="chatBox">
+            <div class="chat-msg bot">🤖 سلام! من همراه تلاش هستم. چطور می‌توانم کمک کنم؟</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="chatInput" placeholder="سوال خود را بپرسید...">
+            <button id="chatSendBtn">ارسال</button>
+        </div>
+    </div>
+
+    <!-- ===== MENU ===== -->
+    <div class="menu-grid">
+        <button class="menu-btn" data-page="home">🏠 خانه</button>
+        <button class="menu-btn" data-page="learn">📖 آموزش</button>
+        <button class="menu-btn" data-page="quiz">📝 آزمون</button>
+        <button class="menu-btn" data-page="schedule">📅 کلاس‌ها</button>
+        <button class="menu-btn" data-page="works">📁 آثار من</button>
+        <button class="menu-btn" data-page="progress">📊 پیشرفت</button>
+        <button class="menu-btn" data-page="chat">💬 چت‌بات</button>
+    </div>
+
+    <div class="sys-msg show" id="systemMessage">⏳ شروع دوره در ۵ روز (۱ تیر ۱۴۰۵)</div>
+</div>
+
+<script>
+// =============================================
+// ۱. ساخت Manifest داخل HTML (بدون فایل جدا)
+// =============================================
+(function() {
+    var manifest = {
+        name: "موفقیت در کنار تلاش",
+        short_name: "تلاش",
+        description: "اپلیکیشن آموزشی ۷۵ روزه",
+        start_url: "./",
+        display: "standalone",
+        background_color: "#0a0a0a",
+        theme_color: "#b8860b",
+        orientation: "portrait",
+        lang: "fa",
+        icons: [
+            {
+                src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192"><rect width="192" height="192" fill="#0a0a0a"/><text x="96" y="130" font-size="110" text-anchor="middle">✨</text></svg>'),
+                sizes: "192x192",
+                type: "image/svg+xml",
+                purpose: "any maskable"
+            },
+            {
+                src: "data:image/svg+xml," + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><rect width="512" height="512" fill="#0a0a0a"/><text x="256" y="340" font-size="280" text-anchor="middle">✨</text></svg>'),
+                sizes: "512x512",
+                type: "image/svg+xml",
+                purpose: "any maskable"
+            }
+        ]
+    };
+    var blob = new Blob([JSON.stringify(manifest)], {type: 'application/json'});
+    var url = URL.createObjectURL(blob);
+    document.getElementById('manifestLink').href = url;
+})();
+
+// =============================================
+// ۲. ثبت Service Worker داخل HTML (بدون فایل جدا)
+// =============================================
+(function() {
+    if (!('serviceWorker' in navigator)) return;
+
+    var swCode = `
+const CACHE_NAME = 'talash-v1';
+const urlsToCache = ['/'];
+
+self.addEventListener('install', function(event) {
+    event.waitUntil(
+        caches.open(CACHE_NAME).then(function(cache) {
+            return cache.addAll(urlsToCache).catch(function(){});
+        })
+    );
+    self.skipWaiting();
+});
+
+self.addEventListener('activate', function(event) {
+    event.waitUntil(
+        caches.keys().then(function(cacheNames) {
+            return Promise.all(
+                cacheNames.filter(function(name){ return name !== CACHE_NAME; })
+                          .map(function(name){ return caches.delete(name); })
+            );
+        })
+    );
+    self.clients.claim();
+});
+
+self.addEventListener('fetch', function(event) {
+    if (event.request.method !== 'GET') return;
+    event.respondWith(
+        caches.match(event.request).then(function(cached) {
+            var networkFetch = fetch(event.request).then(function(response) {
+                if (response && response.status === 200) {
+                    var toCache = response.clone();
+                    caches.open(CACHE_NAME).then(function(cache) {
+                        cache.put(event.request, toCache);
+                    });
+                }
+                return response;
+            }).catch(function() { return cached; });
+            return cached || networkFetch;
+        })
+    );
+});
+`;
+
+    var blob = new Blob([swCode], {type: 'application/javascript'});
+    var swUrl = URL.createObjectURL(blob);
+
+    navigator.serviceWorker.register(swUrl, {scope: '/'})
+        .then(function() { console.log('✅ Service Worker فعال شد'); })
+        .catch(function(e) {
+            // اگر scope کار نکرد، بدون scope امتحان می‌کنیم
+            navigator.serviceWorker.register(swUrl)
+                .then(function() { console.log('✅ Service Worker فعال شد (بدون scope)'); })
+                .catch(function(e2) { console.log('⚠️ SW خطا:', e2); });
+        });
+})();
+
+// =============================================
+// ۳. دکمه نصب PWA
+// =============================================
+var deferredPrompt = null;
+var installBanner = document.getElementById('installBanner');
+var installBtn = document.getElementById('installBtn');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    deferredPrompt = e;
+    installBanner.classList.add('show');
+});
+
+installBtn.addEventListener('click', function() {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(result) {
+        if (result.outcome === 'accepted') {
+            installBanner.classList.remove('show');
+        }
+        deferredPrompt = null;
+    });
+});
+
+window.addEventListener('appinstalled', function() {
+    installBanner.classList.remove('show');
+    deferredPrompt = null;
+});
+
+// =============================================
+// ۴. منطق اصلی برنامه
+// =============================================
+var pToday = {year:1405, month:3, day:27};
+var weekDays = ['شنبه', 'یکشنبه', 'دوشنبه', 'سه‌شنبه', 'چهارشنبه', 'پنج‌شنبه', 'جمعه'];
+var todayWeekDayIndex = 4;
+var todayWeekDayName = weekDays[todayWeekDayIndex];
+var currentMonth = 4;
+var currentYear = 1405;
+
+function pad2(n){return n<10?'0'+n:''+n;}
+function jalaliToString(y,m,d){return y+'/'+pad2(m)+'/'+pad2(d);}
+var monthNames=['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+var holidays=['1405/04/03','1405/04/04','1405/05/13','1405/05/21','1405/05/22','1405/05/30','1405/06/08'];
+
+document.getElementById('shamsiDate').textContent = '۱۴۰۵/۰۳/۲۷';
+document.getElementById('dayStatus').textContent = todayWeekDayName;
+document.getElementById('dayNumber').textContent = 'شروع در ۵ روز';
+
+function jalaliToGregorian(jy, jm, jd) {
+    var j_days_in_month=[0,31,31,31,31,31,31,30,30,30,30,30,29];
+    var j_day_no = 365*(jy-979) + Math.floor((jy-979+1)/33)*8 + Math.floor(((jy-979%33)+3)/4);
+    for(var i=0;i<jm-1;i++) j_day_no += j_days_in_month[i+1];
+    j_day_no += jd - 1;
+    var g_day_no = j_day_no + 79;
+    var gy = 1600 + 400*Math.floor(g_day_no/146097); g_day_no = g_day_no % 146097;
+    var leap = true;
+    if(g_day_no>=36525){g_day_no--;gy+=100*Math.floor(g_day_no/36524);g_day_no=g_day_no%36524;if(g_day_no>=365)g_day_no++;else leap=false;}
+    gy+=4*Math.floor(g_day_no/1461); g_day_no%=1461;
+    if(g_day_no>=366){leap=false;g_day_no--;gy+=Math.floor(g_day_no/365);g_day_no=g_day_no%365;}
+    var g_days_in_month=[31,29,31,30,31,30,31,31,30,31,30,31];
+    var gm2,gd2;
+    for(var i=0;g_day_no>=g_days_in_month[i]+(i==1&&leap?1:0);i++) g_day_no-=g_days_in_month[i]+(i==1&&leap?1:0);
+    gm2=i+1; gd2=g_day_no+1;
+    return new Date(gy, gm2-1, gd2);
+}
+
+function getDayOfWeekShamsi(jsDate) { return (jsDate.getDay() + 1) % 7; }
+var startDate = new Date(2026, 5, 22);
+startDate.setHours(0,0,0,0);
+
+function renderCalendar(month, year) {
+    var grid = document.getElementById('daysGrid');
+    grid.innerHTML = '';
+    var firstOfMonth = jalaliToGregorian(year, month, 1);
+    var firstDowShamsi = getDayOfWeekShamsi(firstOfMonth);
+    var totalDays = month <= 6 ? 31 : (month <= 11 ? 30 : 29);
+    
+    for (var i=0; i<firstDowShamsi; i++) {
+        var empty = document.createElement('div');
+        empty.className = 'day-cell';
+        grid.appendChild(empty);
+    }
+    
+    for (var d=1; d<=totalDays; d++) {
+        var cell = document.createElement('div');
+        cell.className = 'day-cell';
+        cell.textContent = d;
+        var shamsiStr = jalaliToString(year, month, d);
+        
+        if (month === pToday.month && d === pToday.day && year === pToday.year) cell.classList.add('today');
+        if (shamsiStr === '1405/04/01') { cell.classList.add('start'); cell.textContent = '🇮🇷'+d; }
+        if (holidays.indexOf(shamsiStr) !== -1) cell.classList.add('holiday');
+        
+        var thisGreg = jalaliToGregorian(year, month, d);
+        thisGreg.setHours(0,0,0,0);
+        if (thisGreg < startDate) cell.classList.add('inactive');
+        grid.appendChild(cell);
+    }
+    document.getElementById('calendarHeader').textContent = monthNames[month-1] + ' ' + year;
+}
+
+document.querySelectorAll('.month-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.month-btn').forEach(function(b){b.classList.remove('active');});
+        this.classList.add('active');
+        currentMonth = parseInt(this.dataset.month);
+        renderCalendar(currentMonth, currentYear);
+    });
+});
+
+// کلاس‌ها
+var classes = JSON.parse(localStorage.getItem('myClasses')) || [];
+function saveClasses() { localStorage.setItem('myClasses', JSON.stringify(classes)); }
+
+function renderClassList() {
+    var list = document.getElementById('classList');
+    if (classes.length === 0) {
+        list.innerHTML = '<div class="empty-state">هیچ کلاسی ثبت نشده است.</div>';
+    } else {
+        list.innerHTML = '';
+        classes.forEach(function(cls, index) {
+            var div = document.createElement('div');
+            div.className = 'item-card';
+            div.innerHTML = '<div class="info"><div class="title">'+weekDays[cls.day]+' - '+cls.title+'</div><div class="desc">'+cls.start+' تا '+cls.end+'</div></div><button class="delete-btn" data-index="'+index+'">✕</button>';
+            list.appendChild(div);
+        });
+        document.querySelectorAll('#classList .delete-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var idx = parseInt(this.dataset.index);
+                classes.splice(idx, 1);
+                saveClasses();
+                renderClassList();
+                updateHomeWidgets();
+            });
+        });
+    }
+    updateHomeWidgets();
+}
+
+document.getElementById('addClassBtn').addEventListener('click', function() {
+    var day = parseInt(document.getElementById('classDay').value);
+    var title = document.getElementById('classTitle').value.trim();
+    var start = document.getElementById('classStart').value;
+    var end = document.getElementById('classEnd').value;
+    if (!title) { alert('لطفاً عنوان کلاس را وارد کنید.'); return; }
+    if (!start || !end) { alert('لطفاً ساعت شروع و پایان را وارد کنید.'); return; }
+    classes.push({ day: day, title: title, start: start, end: end });
+    saveClasses();
+    renderClassList();
+    document.getElementById('classTitle').value = '';
+    document.getElementById('classStart').value = '10:00';
+    document.getElementById('classEnd').value = '12:00';
+});
+
+// آثار
+var works = JSON.parse(localStorage.getItem('myWorks')) || [];
+function saveWorks() { localStorage.setItem('myWorks', JSON.stringify(works)); }
+
+function renderWorkList() {
+    var list = document.getElementById('workList');
+    if (works.length === 0) {
+        list.innerHTML = '<div class="empty-state">هیچ اثری ثبت نشده است.</div>';
+    } else {
+        list.innerHTML = '';
+        works.forEach(function(work, index) {
+            var div = document.createElement('div');
+            div.className = 'item-card';
+            var linkHtml = work.link ? '<a href="'+work.link+'" target="_blank" style="color:#b8860b;font-size:0.85rem;">مشاهده</a>' : '';
+            div.innerHTML = '<div class="info"><div class="title">'+work.title+'</div><div class="desc">'+(work.desc||'')+'</div><div class="date">'+linkHtml+'</div></div><button class="delete-btn" data-index="'+index+'">✕</button>';
+            list.appendChild(div);
+        });
+        document.querySelectorAll('#workList .delete-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                var idx = parseInt(this.dataset.index);
+                works.splice(idx, 1);
+                saveWorks();
+                renderWorkList();
+            });
+        });
+    }
+}
+
+document.getElementById('addWorkBtn').addEventListener('click', function() {
+    var title = document.getElementById('workTitle').value.trim();
+    var desc = document.getElementById('workDesc').value.trim();
+    var link = document.getElementById('workLink').value.trim();
+    if (!title) { alert('لطفاً عنوان اثر را وارد کنید.'); return; }
+    works.push({ title: title, desc: desc, link: link });
+    saveWorks();
+    renderWorkList();
+    document.getElementById('workTitle').value = '';
+    document.getElementById('workDesc').value = '';
+    document.getElementById('workLink').value = '';
+});
+
+function updateHomeWidgets() {
+    var alertCard = document.getElementById('alertCard');
+    var alertDesc = document.getElementById('alertDesc');
+    var nextName = document.getElementById('nextClassName');
+    var nextDetail = document.getElementById('classDetail');
+    var countdownEl = document.getElementById('countdownTimer');
+
+    if (classes.length === 0) {
+        alertCard.style.display = 'none';
+        nextName.textContent = '---';
+        nextDetail.textContent = 'هنوز کلاسی ثبت نشده است';
+        countdownEl.textContent = '--:--:--';
+        return;
+    }
+
+    var todayIdx = todayWeekDayIndex;
+    var sorted = classes.slice().sort(function(a, b) {
+        var distA = (a.day - todayIdx + 7) % 7;
+        var distB = (b.day - todayIdx + 7) % 7;
+        return distA - distB;
+    });
+    var nearest = sorted[0];
+    var daysDiff = (nearest.day - todayIdx + 7) % 7;
+
+    alertCard.style.display = 'flex';
+    if (daysDiff === 0) {
+        alertDesc.textContent = 'امروز کلاس ' + nearest.title + ' (' + nearest.start + '-' + nearest.end + ')';
+    } else if (daysDiff === 1) {
+        alertDesc.textContent = 'فردا کلاس ' + nearest.title + ' (' + nearest.start + '-' + nearest.end + ')';
+    } else {
+        alertDesc.textContent = weekDays[nearest.day] + ' کلاس ' + nearest.title + ' (' + nearest.start + '-' + nearest.end + ')';
+    }
+
+    nextName.textContent = nearest.title;
+    nextDetail.textContent = weekDays[nearest.day] + ' - ' + nearest.start + ' تا ' + nearest.end;
+
+    var now = new Date();
+    var target = new Date(now);
+    target.setDate(now.getDate() + daysDiff);
+    var h = parseInt(nearest.start.split(':')[0]);
+    var m = parseInt(nearest.start.split(':')[1]);
+    target.setHours(h, m, 0, 0);
+    var diffMs = target - now;
+    if (diffMs < 0) diffMs += 7 * 24 * 60 * 60 * 1000;
+    var hours = Math.floor(diffMs / (1000 * 60 * 60));
+    var mins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+    var secs = Math.floor((diffMs % (1000 * 60)) / 1000);
+    countdownEl.textContent = 
+        String(hours).padStart(2,'0') + ':' + 
+        String(mins).padStart(2,'0') + ':' + 
+        String(secs).padStart(2,'0');
+}
+
+document.querySelectorAll('.menu-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+        var page = this.dataset.page;
+        document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+        document.getElementById('page-'+page).classList.add('active');
+    });
+});
+
+// چت‌بات
+var chatBox = document.getElementById('chatBox');
+var chatInput = document.getElementById('chatInput');
+var chatSendBtn = document.getElementById('chatSendBtn');
+var knowledge = [
+    {keywords:['let','const','متغیر'],answer:'let برای متغیرهای قابل تغییر و const برای متغیرهای ثابت استفاده می‌شود.'},
+    {keywords:['تابع','function'],answer:'تابع یک بلوک کد است که کار خاصی انجام می‌دهد.'},
+    {keywords:['آرایه','array'],answer:'آرایه یک ساختار داده برای ذخیره لیستی از مقادیر است.'},
+    {keywords:['DOM'],answer:'DOM به برنامه‌ها اجازه می‌دهد تا ساختار و محتوای صفحات وب را تغییر دهند.'},
+    {keywords:['flexbox'],answer:'Flexbox یک روش چیدمان انعطاف‌پذیر در CSS است.'}
+];
+function getBotResponse(question) {
+    var lower = question.toLowerCase();
+    if (lower.indexOf('سلام')!==-1||lower.indexOf('درود')!==-1) return 'سلام! 🤗 چطور می‌توانم کمک کنم؟';
+    if (lower.indexOf('خوبی')!==-1||lower.indexOf('چطوری')!==-1) return 'خوبم، ممنون! 😊 شما چطورید؟';
+    if (lower.indexOf('اسمت')!==-1) return 'من همراه تلاش هستم 🤖';
+    if (lower.indexOf('خداحافظ')!==-1) return 'خداحافظ! موفق باشی 🌹';
+    if (lower.indexOf('کمک')!==-1) return 'حتماً! سوال برنامه‌نویسی دارید یا راهنمایی می‌خواهید؟';
+    for (var i=0;i<knowledge.length;i++) for (var j=0;j<knowledge[i].keywords.length;j++) if (lower.indexOf(knowledge[i].keywords[j])!==-1) return knowledge[i].answer;
+    return 'متأسفم، هنوز جواب این سوال را یاد نگرفتم. اما می‌توانم آن را برای یادگیری ذخیره کنم!';
+}
+function addChatMessage(text, sender) {
+    var div = document.createElement('div');
+    div.className = 'chat-msg '+sender;
+    div.textContent = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+chatSendBtn.addEventListener('click', function() {
+    var question = chatInput.value.trim();
+    if (!question) return;
+    addChatMessage(question, 'user');
+    chatInput.value = '';
+    setTimeout(function(){addChatMessage(getBotResponse(question),'bot');}, 300);
+});
+chatInput.addEventListener('keypress', function(e){if(e.key==='Enter')chatSendBtn.click();});
+
+document.getElementById('chartContainer').innerHTML = '<div class="no-data">⏳ هنوز داده‌ای برای نمایش وجود ندارد.</div>';
+
+renderCalendar(currentMonth, currentYear);
+renderClassList();
+renderWorkList();
+updateHomeWidgets();
+setInterval(updateHomeWidgets, 1000);
+</script>
+</body>
+</html>
